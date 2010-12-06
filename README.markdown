@@ -6,7 +6,7 @@ Twitter: http://twitter.com/evilangelist42
 I'm currently writing a web-based game (http://helmage.com) and thought I would take a look at Grails, Spring Security, and Mongodb for the platform.  I'm noob for all these technologies, so I need to do bunch of learning on each, but here's my first crack at it.  Hope you can find it useful.  See README.html for better formatting.
 
 Prerequisites:
-    - Grails 1.3.5 is setup
+    * Grails 1.3.5 is setup
 
 
 1. Create the app:
@@ -35,7 +35,7 @@ Prerequisites:
         grails create-controller com.helmage.Role
         grails create-controller com.helmage.UserRole
 
-10. Setup the UserController, RoleController and the UserRoleController to use scaffolding (static scaffold = <domainClass>).
+10. Setup the UserController, RoleController and the UserRoleController to use scaffolding (static scaffold = &lt;domainClass&gt;).
 
 11. Update the UserController 'save' and 'update' actions to generate a password that is hashed with the username used as the salt (as per the spring-security-core docs http://burtbeckwith.github.com/grails-spring-security-core/docs/manual/index.html). Configure spring-security to base64 encode the password, and know to use the username as the salt in Config.groovy:
 		grails.plugins.springsecurity.password.encodeHashAsBase64=true
@@ -45,6 +45,7 @@ Prerequisites:
         grails create-service com.helmage.MongoUserDetails
 
     - Update the resources.groovy file to now user this implementation of UserDetailsService:
+
 		beans = {
 			userDetailsService(com.helmage.MongoUserDetailsService)
 		}
@@ -73,13 +74,13 @@ Prerequisites:
     - browse to the SecureController and voila!
 
 Next Steps:
-    - refactor UserRole so HQL isn't used because it isn't supported in the Mongodb GORM implementation
-    - probably not a bad idea to secure the User, Role, and UserRole controllers :)
-    - setup tests for all the objects created
+    * refactor UserRole so HQL isn't used because it isn't supported in the Mongodb GORM implementation
+    * probably not a bad idea to secure the User, Role, and UserRole controllers :)
+    * setup tests for all the objects created
 
 
 References:
-    - Grails Doc: http://www.mongodb.org/display/DOCS/Tutorial
-    - Grails Mongodb plugin Doc: http://grails.github.com/inconsequential/mongo/manual/index.html
-    - Mongodb: http://www.mongodb.org/display/DOCS/Tutorial
-    - Spring Security Core Grails plugin: http://www.mongodb.org/display/DOCS/Tutorial
+    * Grails Doc: http://www.mongodb.org/display/DOCS/Tutorial
+    * Grails Mongodb plugin Doc: http://grails.github.com/inconsequential/mongo/manual/index.html
+    * Mongodb: http://www.mongodb.org/display/DOCS/Tutorial
+    * Spring Security Core Grails plugin: http://www.mongodb.org/display/DOCS/Tutorial
