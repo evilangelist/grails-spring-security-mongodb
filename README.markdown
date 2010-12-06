@@ -6,8 +6,8 @@ Twitter: http://twitter.com/evilangelist42
 I'm currently writing a web-based game (http://helmage.com) and thought I would take a look at Grails, Spring Security, and Mongodb for the platform.  I'm noob for all these technologies, so I need to do bunch of learning on each, but here's my first crack at it.  Hope you can find it useful.  See README.html for better formatting.
 
 Prerequisites:
-    * Grails 1.3.5 is setup
 
+    > Grails 1.3.5 is setup
 
 1. Create the app:
         grails create-app
@@ -46,9 +46,9 @@ Prerequisites:
 
     - Update the resources.groovy file to now user this implementation of UserDetailsService:
 
-		beans = {
-			userDetailsService(com.helmage.MongoUserDetailsService)
-		}
+            beans = {
+                userDetailsService(com.helmage.MongoUserDetailsService)
+            }
 
 13. Setup a URL map to configure Spring Security.  Make sure when setting up role names in spring security to prefix with 'ROLE_' (this is configurable through the RoleVoter component by specifying rolePrefix, see the Spring Security docs for more information).  Update Config.groovy:
 		grails.plugins.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
@@ -74,13 +74,15 @@ Prerequisites:
     - browse to the SecureController and voila!
 
 Next Steps:
-    * refactor UserRole so HQL isn't used because it isn't supported in the Mongodb GORM implementation
-    * probably not a bad idea to secure the User, Role, and UserRole controllers :)
-    * setup tests for all the objects created
+
+    - refactor UserRole so HQL isn't used because it isn't supported in the Mongodb GORM implementation
+    - probably not a bad idea to secure the User, Role, and UserRole controllers :)
+    - setup tests for all the objects created
 
 
 References:
-    * Grails Doc: http://www.mongodb.org/display/DOCS/Tutorial
-    * Grails Mongodb plugin Doc: http://grails.github.com/inconsequential/mongo/manual/index.html
-    * Mongodb: http://www.mongodb.org/display/DOCS/Tutorial
-    * Spring Security Core Grails plugin: http://www.mongodb.org/display/DOCS/Tutorial
+
+    - Grails Doc: http://www.mongodb.org/display/DOCS/Tutorial
+    - Grails Mongodb plugin Doc: http://grails.github.com/inconsequential/mongo/manual/index.html
+    - Mongodb: http://www.mongodb.org/display/DOCS/Tutorial
+    - Spring Security Core Grails plugin: http://www.mongodb.org/display/DOCS/Tutorial
