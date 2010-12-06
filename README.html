@@ -1,0 +1,172 @@
+<html>
+    <head>
+        <title>Grails, Spring Security, and Mongodb</title>
+        <style type="text/css">
+            body {
+                font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+            }
+
+            p, li {
+                font-size: 12px;
+            }
+
+            ol li {
+                margin-top: 20px;
+            }
+
+            ul li {
+                margin-top: 0;
+            }
+
+            .code {
+                font-family: monospace;
+                font-weight: bold;
+            }
+
+            .indent {
+                margin-left: 30px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Grails, Spring Security, and Mongodb</h1>
+        <p class="code">
+            Chris Smith, December 5, 2010<br/>
+            <a href="http://twitter.com/evilangelist42">on Twitter</a>
+        </p>
+        <p>
+            I'm currently writing a web-based game (<a href="http://helmage.com">http://helmage.com</a>) and thought I would take a look at Grails,
+            Spring Security, and Mongodb for the platform.  I'm a noob for all these technologies, so I need to do bunch 
+            of learning on each, but here's my first crack at it.  Hope you can find it useful.
+        </p>
+
+        <p>
+            <h3>Prerequisites:</h3>
+            <ul><li>Grails 1.3.5 is setup</li></ul>
+        </p>
+
+        <p>
+            <h3>Steps:</h3>
+            <ol>
+                <li>Create the app:<br/>
+                    <span class="code indent">grails create-app</span>
+                </li>
+
+                <li>Setup the plugins:<br/>
+                    <div class="code indent">
+                        grails uninstall-plugin hibernate<br/>
+                        grails install-plugin spring-security-core<br/>
+                        grails install-plugin mongodb
+                    </div>
+                </li>
+
+                <li>Create the default spring-security domain objects, controller classes, and GSP views.
+                    This will also update Config.groovy with properties that point to the new security domain classes.<br/>
+                    <span class="code indent">grails s2-quickstart com.helmage User Role</span>
+                </li>
+
+                <li>Add an id property of type <span class="code">org.bson.types.ObjectId</span> for each of the domain classes.  This is
+                    more ideal for Mongodb.  Remove the <span class="code">'id composite'</span> line from the UserRole mapping directive
+                    because composite primary keys are not supported in this case.
+                </li>
+
+                <li>Modify the DataSource.groovy config file to have Mongodb specific configuration.  Remove all
+                    the hibernate specific configuration.
+                </li>
+
+                <li>Setup Mongodb:
+                    <ul>
+                        <li>Make sure Mongodb is running (<span class="code">&lt;MONGODB_HOME&gt;/bin/mongod)</span></li>
+                        <li>Startup the Mongodb shell (<span class="code">&lt;MONGODB_HOME&gt;/bin/mongo</span>)</li>
+                        <li>Switch to the database specified in the grails config: <span class="code">use helmage-dev</span></li>
+                        <li>Create the user specified in the grails config: <span class="code">db.addUser("helmage-web","helmage");</span></li>
+                    </ul>
+                </li>
+
+                <li>Create controllers for User, Role, UserRole so we can add some users easily:
+                    <div class="code indent">
+                        grails create-controller com.helmage.User<br/>
+                        grails create-controller com.helmage.Role<br/>
+                        grails create-controller com.helmage.UserRole
+                    </div>
+                </li>
+
+                <li>Setup the UserController, RoleController and the UserRoleController to use scaffolding (<span class="code">static scaffold = &lt;domainClass&gt;</span>)
+                </li>
+
+                <li>Update the UserController 'save' and 'update' actions to generate a password that is hashed with
+                    the username used as the salt (as per the
+                    <a href="http://burtbeckwith.github.com/grails-spring-security-core/docs/manual/index.html">spring-security-core docs</a>).
+                    Configure spring-security to base64 encode the password, and know to use the username as the salt in Config.groovy:
+                    <div class="code indent">
+                        grails.plugins.springsecurity.password.encodeHashAsBase64=true<br/>
+                        grails.plugins.springsecurity.dao.reflectionSaltSourceProperty = 'username'
+		            </div>
+		        </li>
+
+                <li>Create our own implementation of the UserDetailsService to remove any Hibernate specific references
+                    and to use the Mongodb GORM setup.  To do this, a MongoUserDetailsService class is created that
+                    implements GrailsUserDetailsService.  It is pretty much a copy of GrailsUserDetailsService, but
+                    with a few tweaks for the Mongodb setup.
+                    <ul>
+                        <li>grails create-service com.helmage.MongoUserDetails</li>
+                        <li>Update the resources.groovy file to now user this implementation of UserDetailsService:
+<pre>                                beans = {
+                                    userDetailsService(com.helmage.MongoUserDetailsService)
+                                }</pre>
+                        </li>
+                    </ul>
+		
+                <li>Setup a URL map to configure Spring Security.  Make sure when setting up role names in spring
+                    security to prefix with 'ROLE_' (this is configurable through the RoleVoter component by specifying
+                    rolePrefix, see the Spring Security docs for more information).  Update Config.groovy:
+
+<pre>		grails.plugins.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+		grails.plugins.springsecurity.interceptUrlMap = [
+			'/secure/**':    ['ROLE_USER','IS_AUTHENTICATED_REMEMBERED'],
+			'/js/**':        ['IS_AUTHENTICATED_ANONYMOUSLY'],
+			'/css/**':       ['IS_AUTHENTICATED_ANONYMOUSLY'],
+			'/images/**':    ['IS_AUTHENTICATED_ANONYMOUSLY'],
+			'/*':            ['IS_AUTHENTICATED_ANONYMOUSLY'],
+			'/login/**':     ['IS_AUTHENTICATED_ANONYMOUSLY'],
+			'/logout/**':    ['IS_AUTHENTICATED_ANONYMOUSLY']
+		]
+</pre>
+
+                <li>Create a test controller that will sit under the /secure/ directory to test that authentication will work.
+                    <ul>
+                        <li><span class="code">grails create-controller com.helmage.Secure</span></li>
+                        <li>Add a view to display the currently logged on user using the spring-security plugin taglib</li>
+                    </ul>
+                </li>
+
+                <li>Run the application.
+                    <ul>
+                        <li><span class="code">grails run-app</span></li>
+                        <li>Using the built-in Grails CRUD pages, create a role named 'ROLE_USER'</li>
+                        <li>Create a user (with the enabled property checked)</li>
+                        <li>Create a UserRole that specifies the user and role just created</li>
+                        <li>browse to the SecureController and voila!</li>
+                    </ul>
+                </li>
+            </ol>
+        </p>
+        <p>
+            <h3>Next Steps:</h3>
+            <ul>
+                <li>refactor UserRole so HQL isn't used because it isn't supported in the Mongodb GORM implementation</li>
+                <li>probably not a bad idea to secure the User, Role, and UserRole controllers :)</li>
+                <li>setup tests for all the objects created</li>
+            </ul>
+        </p>
+        <p>
+            <h3>References:</h3>
+            <ul>
+                <li><a href="http://www.mongodb.org/display/DOCS/Tutorial">Grails</a></li>
+                <li><a href="http://grails.github.com/inconsequential/mongo/manual/index.html">Grails Mongodb plugin</a></li>
+                <li><a href="http://www.mongodb.org/display/DOCS/Tutorial">Mongodb</a></li>
+                <li><a href="http://www.mongodb.org/display/DOCS/Tutorial">Spring Security Core Grails plugin</a></li>
+            </ul>
+        </p>
+    </body>
+</html>
