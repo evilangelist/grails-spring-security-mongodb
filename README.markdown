@@ -1,10 +1,9 @@
 Grails, Spring Security, and MongoDB
 ====================================
 
-Chris Smith, December 5, 2010
-Twitter: http://twitter.com/evilangelist42
+Chris Smith Twitter: <http://twitter.com/evilangelist42>, December 5, 2010
 
-I'm currently writing a web-based game (http://helmage.com) and thought I would take a look at Grails, Spring Security, and Mongodb for the platform.  I'm noob for all these technologies, so I need to do bunch of learning on each, but here's my first crack at it.  Hope you can find it useful.  See README.html for better formatting.
+I'm currently writing a web-based game <http://helmage.com> and thought I would take a look at Grails, Spring Security, and Mongodb for the platform.  I'm noob for all these technologies, so I need to do bunch of learning on each, but here's my first crack at it.  Hope you can find it useful.  See README.html for better formatting.
 
 1. Prerequisites:
     - Grails 1.3.5 is setup
@@ -37,7 +36,7 @@ I'm currently writing a web-based game (http://helmage.com) and thought I would 
 
 9. Setup the UserController, RoleController and the UserRoleController to use scaffolding (static scaffold = &lt;domainClass&gt;).
 
-10. Update the UserController 'save' and 'update' actions to generate a password that is hashed with the username used as the salt (as per the spring-security-core docs http://burtbeckwith.github.com/grails-spring-security-core/docs/manual/index.html). Configure spring-security to base64 encode the password, and know to use the username as the salt in Config.groovy:
+10. Update the UserController 'save' and 'update' actions to generate a password that is hashed with the username used as the salt (as per the spring-security-core docs <http://burtbeckwith.github.com/grails-spring-security-core/docs/manual/index.html>). Configure spring-security to base64 encode the password, and know to use the username as the salt in Config.groovy:
 		grails.plugins.springsecurity.password.encodeHashAsBase64=true
 		grails.plugins.springsecurity.dao.reflectionSaltSourceProperty = 'username'
 
@@ -78,9 +77,8 @@ I'm currently writing a web-based game (http://helmage.com) and thought I would 
     - probably not a bad idea to secure the User, Role, and UserRole controllers :)
     - setup tests for all the objects created
 
-
 16. References:
-    - Grails Doc: http://www.mongodb.org/display/DOCS/Tutorial
-    - Grails Mongodb plugin Doc: http://grails.github.com/inconsequential/mongo/manual/index.html
-    - Mongodb: http://www.mongodb.org/display/DOCS/Tutorial
-    - Spring Security Core Grails plugin: http://www.mongodb.org/display/DOCS/Tutorial
+    - Grails Doc: <http://www.mongodb.org/display/DOCS/Tutorial>
+    - Grails Mongodb plugin Doc: <http://grails.github.com/inconsequential/mongo/manual/index.html>
+    - Mongodb: <http://www.mongodb.org/display/DOCS/Tutorial>
+    - Spring Security Core Grails plugin: <http://www.mongodb.org/display/DOCS/Tutorial>
