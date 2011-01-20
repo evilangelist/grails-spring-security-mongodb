@@ -15,7 +15,7 @@ class UserController {
        }
 
        flash.message = "The user was created"
-       redirect action: show, id: userInstance.id
+       redirect action: 'show', id: userInstance.id
     }
 
     def update = {
@@ -31,12 +31,12 @@ class UserController {
           return
        }
 
-       if (springSecurityService.loggedIn &&
+       if (springSecurityService.isLoggedIn() &&
                 springSecurityService.principal.username == userInstance.username) {
           springSecurityService.reauthenticate userInstance.username
        }
 
        flash.message = "The user was updated"
-       redirect action: show, id: userInstance.id
+       redirect action: 'show', id: userInstance.id
     }
 }
